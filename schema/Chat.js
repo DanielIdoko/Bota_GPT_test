@@ -1,5 +1,5 @@
 import { Sequelize, DataTypes } from "sequelize";
-import { sequelize } from "../db";
+import { sequelize } from "../database/db.js";
 
 const ChatModel = sequelize.define("Chat", {
   instructions: {

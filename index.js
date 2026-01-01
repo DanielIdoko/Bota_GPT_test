@@ -1,13 +1,13 @@
 import express from "express";
-import chatRoute from "./routes/chat.route.js";
 import { PORT } from "./config/env.js";
 import { connectToDB } from "./database/db.js";
+import chatRoute from "./routes/chat.route.js";
 
 const app = express();
 
 app.use(express.json({ extended: false }));
 
-// app.use('/api/v1/chat', chatRoute)
+app.use('/api/v1/chat', chatRoute)
 
 app.get("/", (req, res) => {
   res.status(200).json({
