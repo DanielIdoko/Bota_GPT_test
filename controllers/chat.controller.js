@@ -1,4 +1,3 @@
-import { Sequelize } from "sequelize";
 import ChatModel from "../schema/Chat.js";
 import OpenAI from "openai";
 import { OPENAI_API_KEY } from "../config/env.js";
@@ -45,6 +44,30 @@ export const createChat = async (req, res) => {
     res.status(200).json({
       success: true,
       data: "Response: " + response.output_text,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteChat = async (req, res) => {
+  try {
+    const chatId = req.params.chatId;
+
+    const deleteRows = await ChatModel.destroy({
+      where: { id: chatId },
+    });
+
+    if (deleteRows === 0) {
+      return res.status(404).json({
+        success: false,
+        error: "Chat was not found. Try again.",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Chat deleted successfully!",
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
