@@ -10,9 +10,11 @@ const client = new OpenAI({
 export const getAllChats = async (req, res) => {
   try {
     const chats = await ChatModel.findAll();
-    res.status(200).json({
-      data: chats || [],
-    });
+    if (chats) {
+      res.status(200).json({
+        data: chats || [],
+      });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message || "Internal server error" });
   }
