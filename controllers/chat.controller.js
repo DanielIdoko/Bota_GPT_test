@@ -1,10 +1,9 @@
 import ChatModel from "../schema/Chat.js";
-import OpenAI from "openai";
-import { OPENAI_API_KEY } from "../config/env.js";
+import { GEMINI_API_KEY } from "../config/env.js";
+import { GoogleGenAI } from "@google/genai";
 
-const client = new OpenAI({
-  apiKey: OPENAI_API_KEY,
-});
+// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 // desc - Get all chats
 export const getAllChats = async (req, res) => {
@@ -25,30 +24,32 @@ export const createChat = async (req, res) => {
   try {
     const { instructions, input } = req.body;
 
-    if (!input || !instructions) {
-      res.status(400).json({
-        success: false,
-        error: "Please provide the instructions (business data) and input",
-      });
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: [instructions, input],
+    });
+
+    const aiResponse = response.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!aiResponse) {
+      throw new Error("AI returned no content");
     }
 
     await ChatModel.create({
       instructions,
       input,
-    });
-
-    const response = await client.responses.create({
-      model: "gpt-4o",
-      instructions: instructions,
-      input: input,
+      aiResponse,
     });
 
     res.status(200).json({
       success: true,
-      data: "Response: " + response.output_text,
+      message: "Chat successfully created",
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
   }
 };
 

@@ -10,6 +10,10 @@ const ChatModel = sequelize.define("Chat", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  aiResponse: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
 });
 
 export default ChatModel;
